@@ -4,6 +4,6 @@ Open Bionics Robotics is the Open Source branch of the Open Bionics company, in 
 
 Included in this repositry is;
 - FingerLib.h
-    An arduino library used to create servo-like functionality for finger control (Atmega2560 & Arduino Zero).
+		An arduino library used to create servo-like functionality for finger control (Atmega2560 & Arduino Zero).
 - OpenBionics - Parsnip
-    The hand control software for Open Bionics robotic hand kits.
+		The hand control software for Open Bionics robotic hand kits.
