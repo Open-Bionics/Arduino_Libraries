@@ -13,24 +13,37 @@
 
 #include "samd_FingerTimer.h"
 
-#define mS(val) ((val)*5)
+#define TIMER_KHZ	5						// timer interrupt at 5KHz
+#define mS(val)		((val)*(TIMER_KHZ))
 
-#define SERVO_CTRL_TIME   mS(0.4)
-#define PIN_LATCH_TIME    mS(1)
-#define HAPTIC_TIME       mS(1)
 #define MILLI_TIME        mS(1)
-#define SECOND_TIME       1000
+#define MOTOR_CTRL_TIME   mS(0.4)
+#define PIN_LATCH_TIME    mS(1)
 
-// create global pointer to function
-void (*ptr2Func)(void) = NULL;
+// used for customMillis()
+unsigned long _milliSeconds = 0;
 
-// function to receive pointer and assign to global pointer
-void passPtr(void (*f)(void))
+// create global pointers to functions and flags
+void (*_ptr2MotorFunc)(void) = NULL;
+void (*_ptr2PiggybackFunc)(void) = NULL;
+int _ptr2PiggybackFlag = false;
+
+// function to receive pointer to motor and assign to global pointer
+void _passMotorPtr(void (*f)(void))
 {
-	ptr2Func = f;
+	_ptr2MotorFunc = f;
 }
 
-void timerSetup(void)      
+// function to receive pointer for timer piggybacking and assign to global pointer
+void _attachFuncToTimer(void (*f)(void))
+{
+	_ptr2PiggybackFunc = f;
+	
+	_ptr2PiggybackFlag = true;
+}
+
+// initialise timer registers for 5KHz timer (200uS)
+void _timerSetup(void)      
 {
   // Enable clock for TC4 
   REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID_TC4_TC5) ;
@@ -67,29 +80,49 @@ void timerSetup(void)
   
 }
 
+// TC4 at 5KHz (200uS)
 void TC4_Handler()
 {
-  TcCount16* TC = (TcCount16*) TC4; // get timer struct
-  if (TC->INTFLAG.bit.OVF == 1)     // An overflow caused the interrupt
-  {  
-    TC->INTFLAG.bit.OVF = 1;		// writing a one clears the flag ovf flag
+	static long timer5cnt = 0;      // main timer counter increments every call of the interrupt
+	static long servoCount = 0;     // time instance variable for motor position control
+	static long mSecCount = 0;		// time instance variable for millisecond counter
+	
+	TcCount16* TC = (TcCount16*) TC4; // get timer struct
+	if (TC->INTFLAG.bit.OVF == 1)     // An overflow caused the interrupt
+	{  
+		TC->INTFLAG.bit.OVF = 1;		// writing a one clears the flag ovf flag
 
-    static long timer5cnt = 0;        // main timer counter increments every call of the interrupt
-    static long servoCount = 0;       // position control for a single motor
-    
-    timer5cnt++;    // increment timer counter every 200uS
+		timer5cnt++;    // increment timer counter every 200uS
+		
+		// triggered once a millisecond
+		if((timer5cnt - mSecCount) >= MILLI_TIME)
+		{
+			mSecCount = timer5cnt;
+			_milliSeconds++;
+			
+			if(_ptr2PiggybackFlag)
+			{
+				_ptr2PiggybackFunc();
+			}
+		}
  
-    // position control for a single motor
-    if((timer5cnt - servoCount) >= SERVO_CTRL_TIME)
-    {
-      servoCount = timer5cnt;
-	  ptr2Func();
+		// position control for a single motor
+		if((timer5cnt - servoCount) >= SERVO_CTRL_TIME)
+		{
+			servoCount = timer5cnt;
+			_ptr2MotorFunc();
+		}
 	}
-  }
   
-  if (TC->INTFLAG.bit.MC0 == 1) {  // A compare to cc0 caused the interrupt
-    TC->INTFLAG.bit.MC0 = 1;    // writing a one clears the flag ovf flag
-  }
+	if (TC->INTFLAG.bit.MC0 == 1)	// a compare to cc0 caused the interrupt
+	{  
+		TC->INTFLAG.bit.MC0 = 1;    // writing a one clears the flag ovf flag
+	}
+}
+
+long customMillis(void)   // similar to Millis(), but Millis() may not function properly due to using TC4
+{
+	return _milliSeconds;
 }
 
 #endif /* defined(ARDUINO_ARCH_SAMD) */

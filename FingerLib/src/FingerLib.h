@@ -17,10 +17,14 @@
 
 // Architecture specific include
 #if defined(ARDUINO_ARCH_AVR)
+#ifndef MYSERIAL
 #define MYSERIAL Serial
+#endif
 #include "timers/avr_FingerTimer.h"
 #elif defined(ARDUINO_ARCH_SAMD)
+#ifndef MYSERIAL
 #define MYSERIAL SerialUSB
+#endif
 #include "timers/samd_FingerTimer.h"
 #else
 #error "This library only supports boards with an AVR or SAMD processor."
@@ -31,12 +35,7 @@
 #define RIGHT	1	// handFlag
 #define LEFT	2	// handFlag
 
-// #define ADULT_BOARD			5
-// #define FOUR_MOTOR_BOARD	4
-// #define CHILD_BOARD			3
-// #define WEBSITE_BOARD		2
-
-#define MAX_FINGERS			6			// maximum number of fingers
+#define MAX_FINGERS			6			// maximum number of _fingers
 #define MAX_FINGER_SPEED	255			// maximum motor speed
 #define MIN_FINGER_SPEED	150			// minimum motor speed
 #define MAX_FINGER_POS		975			// maximum motor position
@@ -61,6 +60,7 @@ typedef struct {
 	int16_t CurrErr;
 	uint16_t MinPos;
 	uint16_t MaxPos;
+	bool motorEn;
 } finger_t;
 
 class Finger
@@ -68,8 +68,7 @@ class Finger
 	public:
 		Finger();
 		Finger(int board, int left_right);
-		uint8_t attach(int d0, int d1, int sense);				// attach direction & sense pins of a finger    
-		//void attachAll(void);
+		uint8_t attach(int d0, int d1, int sense);				// attach direction & sense pins of a finger 
 		void detach(void);
 		bool attached(void);                   
 		void writePos(int value);   
@@ -83,10 +82,14 @@ class Finger
 		void setSpeedLimits(int min, int max); 
 		
 		void stopMotor(void);				// stop single motor
+		void disableMotor(void);			// set motor speed to 0
+		void enableMotor(void);			// set motor speed to 0
 		bool reachedPos(void);				// returns if position reached
 		bool reachedPos(uint16_t posErr);	// returns if position reached
 		void open(void);					// open finger to min position
 		void close(void);					// close finger to max position
+		void open_close(void);				// toggle finger between open/closed
+		void open_close(boolean dir);		// set finger to fully open/closed 
 		
 		void printSpeed(void);
 		void printSpeed(int newL);
@@ -102,8 +105,7 @@ class Finger
 		
 	private:    
  		uint8_t fingerIndex;			// index into the channel data for this finger
-		uint8_t brd;					// board
-		uint8_t handSide;				// Left/Right
+		
 };
 
 void motorControl(int fNum, signed int motorSpeed);

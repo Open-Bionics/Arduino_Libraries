@@ -1,0 +1,25 @@
+######################################
+# Syntax Coloring Map Finger
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+portExpander	KEYWORD1	portExpander
+I2C_PORTEXPANDER	KEYWORD1	I2C_PORTEXPANDER
+I2C_PortExpander	KEYWORD1	I2C_PortExpander
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+begin	KEYWORD2
+write	KEYWORD2
+read	KEYWORD2
+portMode	KEYWORD2
+portWrite	KEYWORD2
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################

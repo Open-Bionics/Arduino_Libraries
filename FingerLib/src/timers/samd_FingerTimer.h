@@ -25,9 +25,12 @@
 #define SECOND_TIME       1000
 
 // function prototypes
-void passPtr(void (*f)(void));
-void timerSetup(void);
+void _timerSetup(void);
 void TC4_Handler();
+long customMillis(void);
+
+void _passMotorPtr(void (*f)(void));
+void _attachFuncToTimer(void (*f)(void));
 
 #endif /* SAM_FINGERTIMER_H_ */
 #endif /* defined(ARDUINO_ARCH_SAMD) */

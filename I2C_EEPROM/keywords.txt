@@ -1,0 +1,28 @@
+######################################
+# Syntax Coloring Map Finger
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+EEPROM2	KEYWORD1	EEPROM2
+I2C_EEPROM	KEYWORD1	I2C_EEPROM
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+begin	KEYWORD2
+read	KEYWORD2
+readLast	KEYWORD2
+readPage	KEYWORD2
+write	KEYWORD2
+writePage	KEYWORD2
+writeAll	KEYWORD2
+clearAll	KEYWORD2
+update	KEYWORD2
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################

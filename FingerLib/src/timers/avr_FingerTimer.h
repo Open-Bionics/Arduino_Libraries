@@ -25,9 +25,12 @@
 #define SECOND_TIME       1000
 
 // function prototypes
-void passPtr(void (*f)(void));
-void timerSetup(void);
-void changePWMFreq(void);
+void _timerSetup(void);
+void _changePWMFreq(void);
+long customMillis(void);
+
+void _passMotorPtr(void (*f)(void));
+void _attachFuncToTimer(void (*f)(void));
 
 #endif /* AVR_FINGERTIMER_H_ */
 #endif /* defined(ARDUINO_ARCH_AVR) */
