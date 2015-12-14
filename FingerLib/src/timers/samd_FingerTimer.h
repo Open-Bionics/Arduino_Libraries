@@ -19,8 +19,6 @@
 #define mS(val) ((val)*5)
 
 #define SERVO_CTRL_TIME   mS(0.4)
-#define PIN_LATCH_TIME    mS(1)
-#define HAPTIC_TIME       mS(1)
 #define MILLI_TIME        mS(1)
 #define SECOND_TIME       1000
 

@@ -28,7 +28,8 @@
 
 //#define PORTE_DEBUG
 
-#define PORT_EXPANDER_ADDR  38  // I2C port expander address 0x30 0110000 38    // 39 old, 38 new
+#define PORT_EXPANDER_ADDR  0x26     // I2C PortExpander address 0x26 010 0110 38
+
 
 /* PINS */
 #define ARM_LED		0     // LED pin

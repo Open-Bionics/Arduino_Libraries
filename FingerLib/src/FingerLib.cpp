@@ -34,7 +34,7 @@ Finger::Finger()
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
-uint8_t Finger::attach(int dir0, int dir1, int sense)
+uint8_t Finger::attach(int dir0, int dir1, int sense, bool inv)
 {
 	if (fingerIndex < MAX_FINGERS) 
 	{
@@ -46,12 +46,14 @@ uint8_t Finger::attach(int dir0, int dir1, int sense)
 		_fingers[fingerIndex].Pin.dir[0] = dir0;
 		_fingers[fingerIndex].Pin.dir[1] = dir1;
 		_fingers[fingerIndex].Pin.sns = sense;
+		// enable the motor and disable finger inversion 
+		_fingers[fingerIndex].invert = inv;
+		_fingers[fingerIndex].motorEn = true;
 		// set limits and initial values
 		setPosLimits(MIN_FINGER_POS,MAX_FINGER_POS);
 		setSpeedLimits(MIN_FINGER_SPEED,MAX_FINGER_SPEED);
 		writeSpeed(MAX_FINGER_SPEED);
-		// enable the motor
-		_fingers[fingerIndex].motorEn = true;
+		writePos(MIN_FINGER_POS);
 		// initialise the timer
 		if(_timerSetupFlag == false)
 		{
@@ -63,6 +65,11 @@ uint8_t Finger::attach(int dir0, int dir1, int sense)
 	}
 	
 	return fingerIndex;
+}
+
+uint8_t Finger::attach(int dir0, int dir1, int sense)
+{
+	return attach(dir0,dir1,sense,0);
 }
 
 void Finger::detach(void)
@@ -86,14 +93,13 @@ void Finger::writePos(int value)
 		_fingers[fingerIndex].CurrDir = CLOSE;
 	else
 		_fingers[fingerIndex].CurrDir = OPEN;	
-	
 }
 
 void Finger::writeDir(int value)
 {
-	// toggle direction
-	_fingers[fingerIndex].CurrDir = !_fingers[fingerIndex].CurrDir;
-	// set target position using limits
+	// store direction
+	_fingers[fingerIndex].CurrDir = value;
+	// set target position based on input direction
 	if(_fingers[fingerIndex].CurrDir == OPEN)
 		writePos(_fingers[fingerIndex].MinPos);
 	else if(_fingers[fingerIndex].CurrDir == CLOSE)
@@ -110,7 +116,7 @@ uint8_t Finger::readDir(void)
 	return _fingers[fingerIndex].CurrDir;
 }
 
-uint16_t Finger::readPos(void)
+int16_t Finger::readPos(void)
 {
 	return _fingers[fingerIndex].CurrPos;
 }
@@ -118,6 +124,11 @@ uint16_t Finger::readPos(void)
 int16_t Finger::readPosError(void)
 {
 	return _fingers[fingerIndex].CurrErr;
+}
+
+uint16_t Finger::readTargetPos(void)
+{
+	return _fingers[fingerIndex].TargPos;
 }
 
 uint8_t Finger::readSpeed(void)
@@ -141,41 +152,43 @@ void Finger::setSpeedLimits(int min, int max)
 
 void Finger::stopMotor(void)
 {
-	// set motor speed to 0
-	//_fingers[fingerIndex].TargSpeed = 0;
-	writePos(readPos());			// set target position to current pos
+	// set target position to current pos
+	writePos(readPos());	
 }
 
 void Finger::disableMotor(void)
 {
-	// set motor speed to 0
-	//_fingers[fingerIndex].TargSpeed = 0;
+	// disable the motor by setting both pins low (targSpeed & targPos remain unchanged)
 	_fingers[fingerIndex].motorEn = false;
 }
 
 void Finger::enableMotor(void)
 {
-	// reset motor speed to max limit
-	//_fingers[fingerIndex].TargSpeed = MAX_FINGER_SPEED;
+	// re-enable the motor by setting both pins low (targSpeed & targPos remain unchanged)
 	_fingers[fingerIndex].motorEn = true;
+}
+
+void Finger::invertFingerDir(void)
+{
+	_fingers[fingerIndex].invert = !_fingers[fingerIndex].invert;
 }
 
 bool Finger::reachedPos(void)
 {
 	// return 1 if motor reaches target position
 	if(abs(readPosError()) < POS_REACHED_TOLERANCE)
-	return 1;
+		return 1;
 	else
-	return 0;
+		return 0;
 }
 
 bool Finger::reachedPos(uint16_t posErr)
 {
 	// return 1 if motor reaches custom target position
 	if(abs(readPosError()) < posErr)
-	return 1;
+		return 1;
 	else
-	return 0;
+		return 0;
 }
 
 void Finger::open(void)
@@ -301,14 +314,22 @@ void fingerPosCtrl(void)
 	if(_TotalFingerCount > 0)			// if _fingers are attached
 	{
 		// count through each finger at each function call
-		if(fingerCounter < (_TotalFingerCount - 1))	fingerCounter++;
-		else fingerCounter = 0;  
+		if(fingerCounter < (_TotalFingerCount - 1))	
+			fingerCounter++;
+		else 
+			fingerCounter = 0;  
 		
-		// read position and calc positional error
+		// read position
 		_fingers[fingerCounter].CurrPos = analogRead(_fingers[fingerCounter].Pin.sns); 
+		
+		// 	invert finger direction if enabled
+		if(_fingers[fingerCounter].invert)
+			_fingers[fingerCounter].CurrPos = 1023 - _fingers[fingerCounter].CurrPos;
+			
+		// calc positional error
 		_fingers[fingerCounter].CurrErr = (signed int) (_fingers[fingerCounter].TargPos - _fingers[fingerCounter].CurrPos);
 
-		// speed/position line gradient (see graph below for explanation)
+		// speed/position line gradient
 		m = (float) (((float) _fingers[fingerCounter].TargSpeed)/((float) proportionalOffset)); 
 
 		// change the ± sign on the motorSpeed depending on required direction
@@ -318,16 +339,17 @@ void fingerPosCtrl(void)
 		}
 
 		// constrain speed
-		if(abs(_fingers[fingerCounter].CurrErr) < motorStopOffset) motorSpeed = 0;              // motor dead zone
-		else if(_fingers[fingerCounter].CurrErr > (proportionalOffset + motorStopOffset)) motorSpeed = _fingers[fingerCounter].TargSpeed;        // set to max speed speed depending on direction
-		else if(_fingers[fingerCounter].CurrErr < -(proportionalOffset + motorStopOffset)) motorSpeed = -_fingers[fingerCounter].TargSpeed;      // set to max speed speed depending on direction
+		if(abs(_fingers[fingerCounter].CurrErr) < motorStopOffset) 
+			motorSpeed = 0;              // motor dead zone
+		else if(_fingers[fingerCounter].CurrErr > (signed int)(proportionalOffset + motorStopOffset)) 
+			motorSpeed = _fingers[fingerCounter].TargSpeed;        // set to max speed speed depending on direction
+		else if(_fingers[fingerCounter].CurrErr < -(signed int)(proportionalOffset + motorStopOffset)) 
+			motorSpeed = -_fingers[fingerCounter].TargSpeed;      // set to max speed speed depending on direction
 		else if(abs(_fingers[fingerCounter].CurrErr) <= (proportionalOffset + motorStopOffset))
-		{
 			motorSpeed = (m * (_fingers[fingerCounter].CurrErr + (motorStopOffset * vectorise))) - (_fingers[fingerCounter].MinSpeed * vectorise); // proportional control
-		}
 		
 		// constrain speed to limits
-		motorSpeed = constrain(motorSpeed,-((signed int)_fingers[fingerCounter].MaxSpeed) ,(signed int)_fingers[fingerCounter].MaxSpeed);
+		motorSpeed = constrain(motorSpeed,-((signed int)_fingers[fingerCounter].MaxSpeed) ,(signed int)_fingers[fingerCounter].MaxSpeed);		
 		
 		// if motor disabled, set speed to 0
 		if(!_fingers[fingerCounter].motorEn)
@@ -337,6 +359,8 @@ void fingerPosCtrl(void)
 		motorControl(fingerCounter, motorSpeed);
 	}
 }
+
+
 
 void motorControl(int fNum, signed int motorSpeed)
 {
@@ -358,6 +382,11 @@ void motorControl(int fNum, signed int motorSpeed)
 	// store current speed
 	_fingers[fNum].CurrSpeed = motorSpeed;
 	
+	
+	// 	invert finger direction if enabled
+	if(_fingers[fNum].invert)
+		direction = !direction;
+
 	// write the speed to the motors
 	analogWrite(_fingers[fNum].Pin.dir[direction],motorSpeed);   //write fingerSpeed to one direction pin
 	analogWrite(_fingers[fNum].Pin.dir[!direction],0);			//write 0 to other direction pin

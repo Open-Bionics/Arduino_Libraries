@@ -9,7 +9,7 @@
  *
  */ 
 
-#if defined(ARDUINO_ARCH_AVR)
+#if defined(ARDUINO_AVR_MEGA2560)
 
 #include "avr_FingerTimer.h"
 
@@ -107,4 +107,4 @@ long customMillis(void)   // similar to Millis(), but Millis() may not function 
 	return _milliSeconds;
 }
 
-#endif /* defined(ARDUINO_ARCH_AVR) */
+#endif /* defined(ARDUINO_AVR_MEGA2560) */

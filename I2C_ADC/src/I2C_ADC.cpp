@@ -54,6 +54,11 @@ uint16_t I2C_ADC::read(uint8_t channel)
 	uint8_t i;
 	uint8_t rxByte[2];
 	uint16_t ADCval[NUM_CHANNELS];
+	#ifdef ADC2_DEBUG
+	MYSERIAL.print("ADC2.read() addr ");
+	printBin(ADC2_ADDR);
+	MYSERIAL.print(" ");
+	#endif
 	Wire.requestFrom(ADC2_ADDR,(NUM_CHANNELS*2));
 	for(i=0;i<NUM_CHANNELS;i++)
 	{

@@ -16,7 +16,7 @@
 #include <Arduino.h>
 
 // Architecture specific include
-#if defined(ARDUINO_ARCH_AVR)
+#if defined(ARDUINO_AVR_MEGA2560)
 #ifndef MYSERIAL
 #define MYSERIAL Serial
 #endif
@@ -27,7 +27,7 @@
 #endif
 #include "timers/samd_FingerTimer.h"
 #else
-#error "This library only supports boards with an AVR or SAMD processor."
+#error "This library only supports boards an Arduino Mega 2560 or an Arduino Zero."
 #endif
 
 #define OPEN	0
@@ -38,8 +38,8 @@
 #define MAX_FINGERS			6			// maximum number of _fingers
 #define MAX_FINGER_SPEED	255			// maximum motor speed
 #define MIN_FINGER_SPEED	150			// minimum motor speed
-#define MAX_FINGER_POS		975			// maximum motor position
-#define MIN_FINGER_POS		50			// minimum motor position
+#define MAX_FINGER_POS		875			// maximum motor position
+#define MIN_FINGER_POS		150			// minimum motor position
 #define POS_REACHED_TOLERANCE	50		// tolerance for posReached()
 
 typedef struct  {
@@ -61,29 +61,33 @@ typedef struct {
 	uint16_t MinPos;
 	uint16_t MaxPos;
 	bool motorEn;
+	bool invert;
 } finger_t;
 
 class Finger
 {
 	public:
 		Finger();
-		Finger(int board, int left_right);
-		uint8_t attach(int d0, int d1, int sense);				// attach direction & sense pins of a finger 
+		//Finger(int board, int left_right);
+		uint8_t attach(int dir0, int dir1, int sense);				// attach direction & sense pins of a finger 
+		uint8_t attach(int dir0, int dir1, int sense, bool inv);
 		void detach(void);
 		bool attached(void);                   
 		void writePos(int value);   
 		void writeDir(int value);   
 		void writeSpeed(int value);   
-		uint16_t readPos(void);
+		int16_t readPos(void);
 		int16_t readPosError(void);
+		uint16_t readTargetPos(void);
 		uint8_t readDir(void);
 		uint8_t readSpeed(void);
 		void setPosLimits(int min, int max);
 		void setSpeedLimits(int min, int max); 
+		void invertFingerDir(void);
 		
 		void stopMotor(void);				// stop single motor
 		void disableMotor(void);			// set motor speed to 0
-		void enableMotor(void);			// set motor speed to 0
+		void enableMotor(void);				// set motor speed to 0
 		bool reachedPos(void);				// returns if position reached
 		bool reachedPos(uint16_t posErr);	// returns if position reached
 		void open(void);					// open finger to min position

@@ -38,7 +38,6 @@ void _passMotorPtr(void (*f)(void))
 void _attachFuncToTimer(void (*f)(void))
 {
 	_ptr2PiggybackFunc = f;
-	
 	_ptr2PiggybackFlag = true;
 }
 

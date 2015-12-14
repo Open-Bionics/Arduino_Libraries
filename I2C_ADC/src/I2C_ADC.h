@@ -7,6 +7,8 @@
  * This work is licensed under the Creative Commons Attribution 4.0 International License.
  * To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.
  *
+ * AD7995 4 channel I2C ADC
+ *
  */ 
 
 #ifndef I2C_ADC_H_
@@ -28,7 +30,7 @@
 
 //#define ADC2_DEBUG
 
-#define ADC2_ADDR  0x28     // I2C ADC address 0x28 0101000 40
+#define ADC2_ADDR  0x28     // I2C ADC address 0x28 010 1000 40
 
 #define ENABLE    1
 #define DISABLE   0
