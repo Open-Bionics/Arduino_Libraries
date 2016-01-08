@@ -8,9 +8,10 @@ Arduino Libraries
 
 - FingerLib - Creates servo-like functionality to control fingers.
 - I2C_ADC - Basic functionality of the AD7995, a 4 channel I2C ADC.
+- I2C_DigitalPot - Basic functionality of the AD5171 64 position OTP I2C digital potentiometer
 - I2C_EEPROM - Basic functionality of the T24C512C 512Kb I2C EEPROM.
 - I2C_PortExpander - Basic functionality of the PCA9535 I2C port expander.
-- I2C_DigitalPot - Basic functionality of the AD5171 64 position OTP I2C digital potentiometer
+
 
 Firmware
 
