@@ -158,5 +158,8 @@ extern struct textStringType textString;
 extern int currentGrip;				// current grip pattern for muscle sense change
 extern int currentDir;
 
+// SOFTWARE VERSION NUMBER
+#define VERSION_N  1.0
+
 #endif
 

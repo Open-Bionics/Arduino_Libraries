@@ -410,7 +410,8 @@ void initialEEPROMconfig(void)			// write default values to EEPROM
 
 void startUpMessages(void)
 {
-	MYSERIAL.println("Open Bionics - Artichoke");
+	MYSERIAL.print("Open Bionics - Artichoke V");
+  MYSERIAL.println((float)VERSION_N);
 
 	MYSERIAL.print(textString.right_left[advancedSettings.handFlag-1]);
 	MYSERIAL.println(" Hand");

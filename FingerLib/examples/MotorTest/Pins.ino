@@ -19,7 +19,7 @@ void pinAssignment(void)
       finger[0].attach(2,10,A1,1);
       finger[1].attach(8,9,A4);
       finger[2].attach(4,3,A0);
-    #elif defined(WEBSITE_BOARD)
+    #elif defined(ALMOND_BOARD)
       finger[0].attach(5,2,A0);
       finger[1].attach(3,6,A1);
       finger[2].attach(7,8,A2);
@@ -46,7 +46,7 @@ void pinAssignment(void)
       finger[0].attach(2,10,A1,1);
       finger[1].attach(4,3,A0);
       finger[2].attach(8,9,A4);
-    #elif defined(WEBSITE_BOARD)
+    #elif defined(ALMOND_BOARD)
       finger[0].attach(5,2,A0);
       finger[1].attach(11,12,A4);
       finger[2].attach(10,9,A3);

@@ -41,7 +41,6 @@
 void setup()
 {
 	MYSERIAL.begin(38400);		// start serial
-	MYSERIAL.println("Started");
 	
 	#ifdef USE_I2C_ADC
 		Wire.begin();			// if using I2C ADC, initialise I2C

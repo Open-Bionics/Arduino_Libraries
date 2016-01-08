@@ -1,29 +1,38 @@
-/*
- * CFile1.c
- *
- * Created: 02/11/2015 14:16:19
- *  Author: Olly
- */
+/*  Open Bionics - FingerLib Example - HandDemo
+* Author - Olly McBride
+* Date - October 2015
+*
+* This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License.
+* To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
+* 
+* Website - http://www.openbionics.com/
+* GitHub - https://github.com/Open-Bionics
+*/
 
 #include <FingerLib.h>
 
-// Architecture specific include to select serial
-#if defined(ARDUINO_ARCH_AVR)
-#define MYSERIAL Serial
-#elif defined(ARDUINO_ARCH_SAMD)
-#define MYSERIAL SerialUSB
-#else
-#error "Could not set up Serial. This library only supports boards with an AVR or SAMD processor."
-#endif
+/*
+ * WHAT IT DOES
+ * Runs through a demo sequence using FingerLib.h to control the fingers
+ * 
+ */
 
 // uncomment one of the following to select the board
 //#define ADULT_BOARD
-#define FOUR_MOTOR_BOARD
+//#define FOUR_MOTOR_BOARD
 //#define CHILD_BOARD
-//#define WEBSITE_BOARD
+#define ALMOND_BOARD
 
 // number of controllable fingers (number of motors)
-#define NUM_FINGERS  4
+#if defined(ADULT_BOARD)
+#define NUM_FINGERS 5
+#elif defined(FOUR_MOTOR_BOARD)
+#define NUM_FINGERS 4
+#elif defined(CHILD_BOARD)
+#define NUM_FINGERS 3
+#elif defined(ALMOND_BOARD)
+#define NUM_FINGERS 5
+#endif
 
 // uncomment one of the following to select which hand is used
 //int handFlag = LEFT;
@@ -34,7 +43,8 @@ Finger finger[NUM_FINGERS];
 
 void setup()
 {
-  // MYSERIAL.print is used to allow compatability between both the Mega (Serial.print) and the Zero Native Port (SerialUSB.print)
+  // MYSERIAL.print is used to allow compatability between both the Mega (Serial.print) 
+  // and the Zero Native Port (SerialUSB.print), and is defined in FingerLib.h
   MYSERIAL.begin(38400);
   MYSERIAL.println("Started");
 
@@ -68,7 +78,6 @@ void loop()
   pinch();
   pinch();
   delay(1000);
-
 }
 
 // count through all the fingers and set them to open
@@ -114,6 +123,7 @@ void fingerRoll(void)
   {
     finger[i].close();                   // set finger to close
     while (!finger[i].reachedPos(390));  // wait for finger to be fully closed
+    // reachedPos(val) returns true when the error between the current and target position is less than 'val' 
   }
   MYSERIAL.println("Fingers rolling open");
   //for (i = 0; i < NUM_FINGERS; i++)
@@ -121,6 +131,7 @@ void fingerRoll(void)
   {
     finger[i].open();                   // set finger to open
     while (!finger[i].reachedPos(20));  // wait for finger to be fully open
+    // reachedPos(val) returns true when the error between the current and target position is less than 'val' 
   }
 }
 
@@ -129,7 +140,7 @@ void thumbsUp(void)
 {
   MYSERIAL.println("Close all fingers");
   closeHand();
-  while (!allFingersClosed());  // wait for all fingers to be fully closed
+  while (!allFingersClosed());      // wait for all fingers to be fully closed
 
   MYSERIAL.println("Wait for thumb to open");
   finger[0].open();                   // set thumb to open
@@ -138,9 +149,9 @@ void thumbsUp(void)
   MYSERIAL.println("Wait 1s with thumb open");
   delay(1000);        // wait for a bit
 
-  MYSERIAL.println("Close all thumb");
+  MYSERIAL.println("Close thumb");
   finger[0].close();                   // set thumb to close
-  while (!finger[0].reachedPos(50));  // wait for thumb to be fully closed
+  while (!finger[0].reachedPos(100));  // wait for thumb to be fully closed
 
 }
 
