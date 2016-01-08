@@ -13,13 +13,6 @@
 
 #include "avr_FingerTimer.h"
 
-#define TIMER_KHZ	5						// timer interrupt at 5KHz
-#define mS(val)		((val)*(TIMER_KHZ))
-
-#define MILLI_TIME        mS(1)
-#define MOTOR_CTRL_TIME   mS(0.4)
-#define PIN_LATCH_TIME    mS(1)
-
 // used for customMillis()
 unsigned long _milliSeconds = 0;
 
@@ -54,7 +47,7 @@ void _timerSetup(void)
   TCCR5B = 0;	// same for TCCR5B
   TCNT5  = 0;	//initialize counter value to 0
   // set compare match register for 5khz increments
-  OCR5A = 1598;	// = (16*10^6) / (1*5000) - 1 (must be <65536)
+  OCR5A = CC_REG_VAL;	// = (16*10^6) / (1*5000) - 1 (must be <65536)
   // turn on CTC mode
   TCCR5B |= (1 << WGM52);
   // Set CS50 bit for no prescaler for maximum precision
@@ -87,7 +80,7 @@ ISR(TIMER5_COMPA_vect)
   }
   
   // position control for a single motor
-  if((timer5cnt - servoCount) >= SERVO_CTRL_TIME)
+  if((timer5cnt - servoCount) >= MOTOR_CTRL_TIME)
   {
     servoCount = timer5cnt;
 	_ptr2MotorFunc();

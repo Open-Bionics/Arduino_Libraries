@@ -18,16 +18,16 @@
 
 // uncomment one of the following to select the board
 //#define ADULT_BOARD
-//#define FOUR_MOTOR_BOARD
+#define FOUR_MOTOR_BOARD
 //#define CHILD_BOARD
-#define WEBSITE_BOARD
+//#define WEBSITE_BOARD
 
 // number of controllable fingers (number of motors)
-#define NUM_FINGERS  5
+#define NUM_FINGERS  4
 
 // uncomment one of the following to select which hand is used
-int handFlag = LEFT;
-//int handFlag = RIGHT;
+//int handFlag = LEFT;
+int handFlag = RIGHT;
 
 // initialise Finger class to array
 Finger finger[NUM_FINGERS];
@@ -50,17 +50,21 @@ void setup()
 
 void loop()
 {
+  MYSERIAL.println("Finger Roll");
   fingerRoll();
   fingerRoll();
   delay(1000);
 
+  MYSERIAL.println("Thumbs Up");
   thumbsUp();
   thumbsUp();
   delay(1000);
 
+  MYSERIAL.println("Open");
   openHand();
   delay(1000);
 
+  MYSERIAL.println("Pinch");
   pinch();
   pinch();
   delay(1000);

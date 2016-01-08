@@ -16,11 +16,36 @@
 
 #include <Arduino.h>
 
-#define mS(val) ((val)*5)
+// select timer frequency
+//#define TIMER_10KHZ
+//#define TIMER_5KHZ
+#define TIMER_2KHZ
+//#define TIMER_1KHZ
+//#define TIMER_500HZ
 
-#define SERVO_CTRL_TIME   mS(0.4)
-#define MILLI_TIME        mS(1)
-#define SECOND_TIME       1000
+
+#if defined(TIMER_10KHZ)
+#define TIMER_FREQ 10			// timer frequency in KHz
+#define CC_REG_VAL 2397			// compare capture reg val
+#elif defined(TIMER_5KHZ)
+#define TIMER_FREQ 5			// timer frequency in KHz
+#define CC_REG_VAL 4794			// compare capture reg val
+#elif defined(TIMER_2KHZ)
+#define TIMER_FREQ 2			// timer frequency in KHz
+#define CC_REG_VAL 11985		// compare capture reg val
+#elif defined(TIMER_1KHZ)
+#define TIMER_FREQ 1			// timer frequency in KHz
+#define CC_REG_VAL 23970		// compare capture reg val
+#elif defined(TIMER_500HZ)
+#define TIMER_FREQ 0.5			// timer frequency in KHz
+#define CC_REG_VAL 47940		// compare capture reg val
+#endif
+
+#define ms(val)		((val)*(TIMER_FREQ))		// number of timer ticks per ms
+
+// calculate number of timer ticks per ms for each timer function
+#define MILLI_TIME        ms(1)					// 1ms		1Hz	
+#define MOTOR_CTRL_TIME   ms(5)					// 5ms		200Hz
 
 // function prototypes
 void _timerSetup(void);

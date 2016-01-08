@@ -13,13 +13,6 @@
 
 #include "samd_FingerTimer.h"
 
-#define TIMER_KHZ	5						// timer interrupt at 5KHz
-#define mS(val)		((val)*(TIMER_KHZ))
-
-#define MILLI_TIME        mS(1)
-#define MOTOR_CTRL_TIME   mS(0.4)
-#define PIN_LATCH_TIME    mS(1)
-
 // used for customMillis()
 unsigned long _milliSeconds = 0;
 
@@ -62,7 +55,7 @@ void _timerSetup(void)
   TC->CTRLA.reg |= TC_CTRLA_PRESCALER_DIV2;		// Set prescaler
   while (TC->STATUS.bit.SYNCBUSY == 1);			// wait for sync 
 
-  TC->CC[0].reg = 2397;					// 5kHz
+  TC->CC[0].reg = CC_REG_VAL;			// timer frequency
   while (TC->STATUS.bit.SYNCBUSY == 1); // wait for sync 
   
   // Interrupts 
@@ -106,7 +99,7 @@ void TC4_Handler()
 		}
  
 		// position control for a single motor
-		if((timer5cnt - servoCount) >= SERVO_CTRL_TIME)
+		if((timer5cnt - servoCount) >= MOTOR_CTRL_TIME)
 		{
 			servoCount = timer5cnt;
 			_ptr2MotorFunc();

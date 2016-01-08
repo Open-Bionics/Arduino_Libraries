@@ -37,8 +37,8 @@
 
 #define MAX_FINGERS			6			// maximum number of _fingers
 #define MAX_FINGER_SPEED	255			// maximum motor speed
-#define MIN_FINGER_SPEED	150			// minimum motor speed
-#define MAX_FINGER_POS		875			// maximum motor position
+#define MIN_FINGER_SPEED	99			// minimum motor speed
+#define MAX_FINGER_POS		923			// maximum motor position
 #define MIN_FINGER_POS		150			// minimum motor position
 #define POS_REACHED_TOLERANCE	50		// tolerance for posReached()
 
@@ -81,6 +81,7 @@ class Finger
 		uint16_t readTargetPos(void);
 		uint8_t readDir(void);
 		uint8_t readSpeed(void);
+		uint8_t readTargSpeed(void);
 		void setPosLimits(int min, int max);
 		void setSpeedLimits(int min, int max); 
 		void invertFingerDir(void);

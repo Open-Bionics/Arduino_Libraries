@@ -1,0 +1,24 @@
+######################################
+# Syntax Coloring Map Finger
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+D_POT	KEYWORD1	D_POT
+I2C_DigitalPot	KEYWORD1	I2C_DigitalPot
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+writeD	KEYWORD2
+writeRwa	KEYWORD2
+writeRwb	KEYWORD2
+writeR	KEYWORD2
+writeV	KEYWORD2
+enableOTP	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################

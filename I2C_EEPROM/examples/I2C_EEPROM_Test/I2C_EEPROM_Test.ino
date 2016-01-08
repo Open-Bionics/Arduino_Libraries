@@ -15,7 +15,6 @@ int val = 70;         // value to write to EEPROM
 
 int rxByte[3];        // buffer to store received values
 
-
 void setup()
 {
   MYSERIAL.begin(38400);
@@ -25,7 +24,7 @@ void setup()
   EEPROM2.begin();
   MYSERIAL.println("I2C Initialised");
 
-  MYSERIAL.println("Press 'k' to test the EEPROM, or press 'c' to clear the EEPROM (set all values to 255)");
+  MYSERIAL.println("Press 'k' to test the EEPROM, 'r' to read the contents (0-255) or press 'c' to clear the EEPROM (set all values to 255)");
 }
 
 void loop(void)
@@ -35,6 +34,7 @@ void loop(void)
     char in = MYSERIAL.read();
     if(in == 'k')
     {
+      in = 0;
       MYSERIAL.print("About to read from pos ");
       MYSERIAL.println(MEM_POS);
       rxByte[0] = EEPROM2.read(MEM_POS);
@@ -62,9 +62,21 @@ void loop(void)
     }
     else if(in == 'c')
     {
+      in = 0;
       MYSERIAL.println("Clearing EEPROM");
       EEPROM2.clearAll(0,255);
       MYSERIAL.println("Clear Complete \n");
+    }
+    else if(in == 'r')
+    {
+      in = 0;
+      int i;
+      for(i=0;i<500;i++)
+      {
+        MYSERIAL.print(i);
+        MYSERIAL.print(" ");
+        MYSERIAL.println(EEPROM2.read(i));
+      }
     }
   }
 }

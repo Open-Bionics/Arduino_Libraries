@@ -54,6 +54,7 @@ uint8_t Finger::attach(int dir0, int dir1, int sense, bool inv)
 		setSpeedLimits(MIN_FINGER_SPEED,MAX_FINGER_SPEED);
 		writeSpeed(MAX_FINGER_SPEED);
 		writePos(MIN_FINGER_POS);
+		_fingers[fingerIndex].CurrDir = OPEN;					// set dir to OPEN after initial writePos to configure finger dir
 		// initialise the timer
 		if(_timerSetupFlag == false)
 		{
@@ -63,6 +64,8 @@ uint8_t Finger::attach(int dir0, int dir1, int sense, bool inv)
 		}
 		_fingers[fingerIndex].Pin.isActive = true;		// this must be set after the check
 	}
+	
+	
 	
 	return fingerIndex;
 }
@@ -101,9 +104,9 @@ void Finger::writeDir(int value)
 	_fingers[fingerIndex].CurrDir = value;
 	// set target position based on input direction
 	if(_fingers[fingerIndex].CurrDir == OPEN)
-		writePos(_fingers[fingerIndex].MinPos);
+		_fingers[fingerIndex].TargPos = _fingers[fingerIndex].MinPos;
 	else if(_fingers[fingerIndex].CurrDir == CLOSE)
-		writePos(_fingers[fingerIndex].MaxPos);
+		_fingers[fingerIndex].TargPos = _fingers[fingerIndex].MaxPos;
 }
 
 void Finger::writeSpeed(int value)
@@ -134,6 +137,11 @@ uint16_t Finger::readTargetPos(void)
 uint8_t Finger::readSpeed(void)
 {
 	return _fingers[fingerIndex].CurrSpeed;
+}
+
+uint8_t Finger::readTargSpeed(void)
+{
+	return _fingers[fingerIndex].TargSpeed;
 }
 
 void Finger::setPosLimits(int min, int max)
@@ -298,7 +306,7 @@ void Finger::printDetails(void)
 }
 
 // controls motor PWM values based on current and target position using a proportional controller (triggered by interrupt)
-// To Do: Update motor controller
+// total duration = 439us, therefore max freq = 2kHz. We use 200Hz (5ms), where 0.5ms = motor control, 4.5ms = program runtime
 void fingerPosCtrl(void)  
 {
 	static int fingerCounter = 0;	// counts through attached _fingers
@@ -320,7 +328,7 @@ void fingerPosCtrl(void)
 			fingerCounter = 0;  
 		
 		// read position
-		_fingers[fingerCounter].CurrPos = analogRead(_fingers[fingerCounter].Pin.sns); 
+		_fingers[fingerCounter].CurrPos = analogRead(_fingers[fingerCounter].Pin.sns);			// 424us
 		
 		// 	invert finger direction if enabled
 		if(_fingers[fingerCounter].invert)
@@ -334,9 +342,7 @@ void fingerPosCtrl(void)
 
 		// change the ± sign on the motorSpeed depending on required direction
 		if(_fingers[fingerCounter].CurrErr>=0)   
-		{
 			vectorise = -1;
-		}
 
 		// constrain speed
 		if(abs(_fingers[fingerCounter].CurrErr) < motorStopOffset) 
@@ -356,7 +362,7 @@ void fingerPosCtrl(void)
 			motorSpeed = 0;
 		
 		// send speed to motors
-		motorControl(fingerCounter, motorSpeed);
+		motorControl(fingerCounter, motorSpeed);				// 15us
 	}
 }
 

@@ -13,15 +13,23 @@
 // uncomment one of the following to select the board
 //#define ADULT_BOARD
 //#define FOUR_MOTOR_BOARD
-#define CHILD_BOARD
-//#define WEBSITE_BOARD
-
-// number of controllable fingers (number of motors)
-#define NUM_FINGERS  5
+//#define CHILD_BOARD
+#define WEBSITE_BOARD
 
 // uncomment one of the following to select which hand is used
 //int handFlag = LEFT;
 int handFlag = RIGHT;
+
+// number of controllable fingers (number of motors)
+#if defined(ADULT_BOARD)
+#define NUM_FINGERS  5
+#elif defined(FOUR_MOTOR_BOARD)
+#define NUM_FINGERS 4
+#elif defined(CHILD_BOARD)
+#define NUM_FINGERS 3
+#elif defined(WEBSITE_BOARD)
+#define NUM_FINGERS 6
+#endif
 
 // initialise Finger class to array
 Finger finger[NUM_FINGERS];
