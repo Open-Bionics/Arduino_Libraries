@@ -12,6 +12,10 @@
 // slightly modified version of WiiChuck
 #include <Wiichuck.h>     // can be downloaded from https://github.com/nicolaskruchten/arduino/tree/master/libraries/WiiChuck
 
+
+// Comment out the following line to prevent 
+
+
 Wiichuck wii;
 
 void HANDleMain(void)
@@ -25,6 +29,12 @@ void HANDleMain(void)
 	// configuration
 	if(!initialised)
 	{
+    pinMode(A6,OUTPUT);
+    pinMode(A7,OUTPUT);
+    digitalWrite(A6,HIGH);
+    digitalWrite(A7,HIGH);
+
+  
 		Wire.begin();
 		wii.init();
 		MYSERIAL.println("Calibrating mid position of joystick");
