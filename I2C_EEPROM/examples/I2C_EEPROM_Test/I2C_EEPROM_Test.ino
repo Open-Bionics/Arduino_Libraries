@@ -10,6 +10,8 @@
  *  as the EEPROM location denoted by MEM_POS
  */
 
+#define AMOUNT_TO_WRITE 1000
+
 #define MEM_POS 12    // EEPROM location to store value
 int val = 70;         // value to write to EEPROM
 
@@ -64,14 +66,14 @@ void loop(void)
     {
       in = 0;
       MYSERIAL.println("Clearing EEPROM");
-      EEPROM2.clearAll(0,255);
+      EEPROM2.clearAll(0,AMOUNT_TO_WRITE);
       MYSERIAL.println("Clear Complete \n");
     }
     else if(in == 'r')
     {
       in = 0;
       int i;
-      for(i=0;i<500;i++)
+      for(i=0;i<AMOUNT_TO_WRITE;i++)
       {
         MYSERIAL.print(i);
         MYSERIAL.print(" ");

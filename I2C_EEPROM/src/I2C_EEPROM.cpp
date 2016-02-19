@@ -122,8 +122,8 @@ void I2C_EEPROM::pollACK(void)
 
 void I2C_EEPROM::writeAddr(uint16_t addr)
 {
-	Wire.write((uint8_t)((addr>>8)&0xff));   // MSB
-	Wire.write((uint8_t)(addr&0xff));        // LSB
+	Wire.write((uint8_t)((addr >> 8) & 0xFF));	// MSB
+	Wire.write((uint8_t)(addr & 0xFF));			// LSB
 }
 
 void I2C_EEPROM::printBin(uint8_t inVal)
