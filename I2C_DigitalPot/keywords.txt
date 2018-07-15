@@ -6,8 +6,8 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-D_POT	KEYWORD1	D_POT
-I2C_DigitalPot	KEYWORD1	I2C_DigitalPot
+D_POT	KEYWORD1
+I2C_DigitalPot	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

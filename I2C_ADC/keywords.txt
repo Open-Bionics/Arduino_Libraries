@@ -6,8 +6,8 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-ADC2	KEYWORD1	ADC2
-I2C_ADC	KEYWORD1	I2C_ADC
+ADC2	KEYWORD1
+I2C_ADC	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
