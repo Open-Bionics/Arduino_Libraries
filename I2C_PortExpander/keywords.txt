@@ -6,9 +6,9 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-portExpander	KEYWORD1	portExpander
-I2C_PORTEXPANDER	KEYWORD1	I2C_PORTEXPANDER
-I2C_PortExpander	KEYWORD1	I2C_PortExpander
+portExpander	KEYWORD1
+I2C_PORTEXPANDER	KEYWORD1
+I2C_PortExpander	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

@@ -6,8 +6,8 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-EEPROM2	KEYWORD1	EEPROM2
-I2C_EEPROM	KEYWORD1	I2C_EEPROM
+EEPROM2	KEYWORD1
+I2C_EEPROM	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
